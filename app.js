@@ -11,6 +11,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+//const CrudModule = require('./Systems/CrudSystem');
+
+//const user = new CrudModule('users',1,'/users');
+
+//console.log(router.stack[0].route);
+
+const RoutingSystem = require('./Systems/RoutingSystem');
+
+
+const Router = new RoutingSystem('/users');
+
+console.log(Router.router)
+app.use(Router.router)
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -8,8 +8,8 @@ class Repository {
 		this.table = table;
 
 	}
-	getRow(field,value){
-		return knex.table(this.table).select('*')where(field,value);
+	get(field,value){
+		return knex.table(this.table).select('*').where(field,value);
 	}
 
 	insert(data){
@@ -28,4 +28,4 @@ class Repository {
 
 
 
-module.exports = new Repository();
+module.exports = Repository;

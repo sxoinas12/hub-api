@@ -1,24 +1,28 @@
 const Repository = require('./DbSystem');
 const config = require('../auth/config');
+var express = require('express');
+const Router = require('')
 
 
-class CrudModoule {
-	constructor(table,config.app.roles){
-		//must decide if i ll create CrudModule based on Table 
-		this.table = table;
-		this.repository = new Repository(this.table);
+
+class CrudModule {
+	constructor(table,roles = config.app.roles,prefix,middlewares = []){
+		//must decide if i ll create CrudModule based on Table
+		//super(table,roles = config.app.roles,route);
+		
 	}
 
+		
+	/*//create to Db
 
-	//create to Db
-	create(){
-
+	create(data){
+		//return this.repository.insert(data);
 	},
 
 
 	//read from Db
 	read(){
-
+		//return this.repository.get()
 	},
 
 	//Update DB
@@ -28,8 +32,8 @@ class CrudModoule {
 	//Delete from Db
 	delete(){
 
-	}
+	}*/
 
 }
 
-module.exports = new CrudModule();
+module.exports = CrudModule;

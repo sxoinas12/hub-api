@@ -1,38 +1,26 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var createError = require('http-errors')
+var express = require('express')
+var path = require('path')
+var cookieParser = require('cookie-parser')
+var logger = require('morgan')
+var app = express()
 
-var app = express();
-
-const bodyParser = require('body-parser');
-
-
-
+const bodyParser = require('body-parser')
+const  RoutingSystem = require('./Systems/RoutingSystem')
+const  UserModule = require("./routes/Users/index")
 
 app.use(bodyParser.json());
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-//const CrudModule = require('./Systems/CrudSystem');
-
-//const user = new CrudModule('users',1,'/users');
-
-//console.log(router.stack[0].route);
-
-const RoutingSystem = require('./Systems/RoutingSystem');
 
 
 
-const UserModule = require("./routes/Users/index");
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(RoutingSystem.router);
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

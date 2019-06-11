@@ -8,9 +8,10 @@ const express = require('express');
 
 class CrudModule {
 	constructor(table, MainRoute, roles = config.app.roles){
-		this.repository = new Repository('users');
+		
 		this.router = express.Router();
 		this.table = table;
+		this.repository = new Repository(this.table);
 		this.MainRoute = MainRoute
 		this.Routes = [
 			{

@@ -6,6 +6,12 @@ var logger = require('morgan');
 
 var app = express();
 
+const bodyParser = require('body-parser');
+
+
+
+
+app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -20,10 +26,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 const RoutingSystem = require('./Systems/RoutingSystem');
 
 
-const Router = new RoutingSystem('/users');
 
-console.log(Router.router)
-app.use(Router.router)
+const UserModule = require("./routes/Users/index");
+
+app.use(RoutingSystem.router);
 
 
 

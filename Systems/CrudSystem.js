@@ -1,24 +1,49 @@
 const Repository = require('./DbSystem');
 const config = require('../auth/config');
-var express = require('express');
-const Router = require('')
+const RoutingSystem = require('./RoutingSystem'); 
+const Router = require('./RoutingSystem'); 
+const express = require('express');
 
 
 
 class CrudModule {
-	constructor(table,roles = config.app.roles,prefix,middlewares = []){
-		//must decide if i ll create CrudModule based on Table
-		//super(table,roles = config.app.roles,route);
+	constructor(table, MainRoute, roles = config.app.roles){
+		this.repository = new Repository('users');
+		this.router = express.Router();
+		this.table = table;
+		this.MainRoute = MainRoute
+		this.Routes = [
+			{
+				Method:"get",
+				endpoint:"/:id",
+				fn:(req,res,next) => {
+					res.sendStatus(200)
+				}
+			},
+			{
+				Method:"post",
+				endpoint:"/",
+				fn:(req,res,next) => {
+					let data = req.body;
+					console.log("ssss",data);
+					this.create(data)
+					.then((r) => {
+						res.sendStatus(200)
+					})
+					.catch((e) => {
+						console.log(e)
+					})
+				}
+			}
+			]
+		RoutingSystem.RegisterRoutes(this.MainRoute , this.Routes);
 		
+
 	}
-
-		
-	/*//create to Db
-
 	create(data){
-		//return this.repository.insert(data);
-	},
-
+		return this.repository.insert(data);
+	}
+/*
 
 	//read from Db
 	read(){

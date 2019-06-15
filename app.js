@@ -5,10 +5,11 @@ var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 var app = express()
 
+const config = require("./auth/config");
 const bodyParser = require('body-parser')
-const  RoutingSystem = require('./Systems/RoutingSystem')
-const  UserModule = require("./routes/Users/index")
-//const session = require("express-session");
+const RoutingSystem = require('./Systems/RoutingSystem')
+const UserModule = require("./routes/Users/index")
+const session = require("express-session");
 const cors = require('cors');
 app.use(cors());
 app.use(bodyParser.json());
@@ -16,11 +17,13 @@ app.use(logger('dev'));
 
 
 
+app.use(session(config.app.session))
+
+
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-//app.use(express.static(path.join(__dirname, 'public')))
 
 
 //app.use(UserModule._middleware);

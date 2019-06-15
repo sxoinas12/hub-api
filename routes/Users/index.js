@@ -9,6 +9,7 @@ class UserModule {
     constructor() {
         this.MainRoute = '/users';
         this.repository = new Repository('users');
+        this._middleware = this._middleware.bind(this)
         this.Routes = [{
                 Method: "post",
                 endpoint: "/login",
@@ -17,8 +18,8 @@ class UserModule {
                     this._login(data)
                     .then((user) => {
                         //req.session.user = user;
-                        console.log("Coming here to send 200",user)
                         let {username , ...rest} = user;
+                        req.session.user = username;
                         res.send(username);
                     }).catch((e) => {
                         console.log(e);
@@ -43,9 +44,6 @@ class UserModule {
     }
 
 	/*eslint-enable */
-
-
-    
 
     _register(data) {
         let {username,password,email} = data;
@@ -93,9 +91,19 @@ class UserModule {
             }
             return user;
         })
+        
     }
     _middleware(req, res, next) {
-        return next();
+        if(req.session.user === undefined){
+            req.user = {
+                role:0
+            }
+            return next();
+        }
+        else{
+            req.user = req.sesion.user;
+            return next();
+        }
     }
 
 }

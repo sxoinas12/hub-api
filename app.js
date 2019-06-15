@@ -9,7 +9,8 @@ const bodyParser = require('body-parser')
 const  RoutingSystem = require('./Systems/RoutingSystem')
 const  UserModule = require("./routes/Users/index")
 //const session = require("express-session");
-
+const cors = require('cors');
+app.use(cors());
 app.use(bodyParser.json());
 app.use(logger('dev'));
 

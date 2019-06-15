@@ -17,7 +17,9 @@ class UserModule {
                     this._login(data)
                     .then((user) => {
                         //req.session.user = user;
-                        res.send("User Succesfully Logged in");
+                        console.log("Coming here to send 200",user)
+                        let {username , ...rest} = user;
+                        res.send(username);
                     }).catch((e) => {
                         console.log(e);
                         res.sendStatus(500);

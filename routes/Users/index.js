@@ -3,6 +3,9 @@ const RoutingSystem = require('../../Systems/RoutingSystem');
 const CrudModule = require('../../Systems/CrudSystem');
 const bcrypt = require('bcrypt');
 const Repository = require("../../Systems/DbSystem");
+const rp = require('request-promise');
+
+
 
 class UserModule {
 	/*eslint-disable */
@@ -37,6 +40,39 @@ class UserModule {
                         res.send("User Regirestered SUccesfully");
                     })
                     .catch((e) => res.sendStatus(501))
+                }
+            },
+            {
+                Method:"get",
+                endpoint:"/auth/linkedin",
+                fn:(req,res,next) => {
+                    //aders)
+                    console.log(req.query)
+                    console.log(req.body)
+                    
+                    let code = req.query.code;
+                    let redirect_uri = encodeURIComponent('http://localhost:3001/users/auth/linkedin')
+                    console.log("########")
+                    let options = {
+                        method:"POST",
+                        uri:"https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code="+code+"&redirect_uri="+redirect_uri+"&client_id=77yj9s749chsnc&client_secret=EwR65xRV01x4pVo0",
+
+                        headers:{
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                        
+                    }
+                   
+                    
+                    rp(options)
+                    .then((resp) => {
+                        console.log("####")
+                        console.log(resp);
+                        res.send(200)
+                    }).catch((e) => {
+                        console.log("ERRROr",e)
+                        console.log(options.uri)
+                    })
                 }
             }
         ];

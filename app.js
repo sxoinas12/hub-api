@@ -28,7 +28,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 
-
+/*
 app.get("/auth",(req,res,next) => {
 	console.log("Loggin with linkding....")
 	let options = {
@@ -48,9 +48,11 @@ app.get("/auth",(req,res,next) => {
 
 
 app.get("/auth/linkedin/callback",(req,res,next) => {
-	console.log("redirected i guesss but shall be front end")
-	res.send("redirected")
-})
+	//console.log("redirected i guesss but shall be front end")
+	
+	//
+	res.redirect("http://localhost:3000/home")
+})*/
 
 //app.use(UserModule._middleware);
 app.use(RoutingSystem.router);

@@ -4,7 +4,7 @@ const CrudModule = require('../../Systems/CrudSystem');
 const bcrypt = require('bcrypt');
 const Repository = require("../../Systems/DbSystem");
 const rp = require('request-promise');
-
+const config = require('../../auth/config');
 
 
 class UserModule {
@@ -20,12 +20,10 @@ class UserModule {
                     let data = req.body;
                     this._login(data)
                     .then((user) => {
-                        //req.session.user = user;
                         let {username , ...rest} = user;
                         req.session.user = username;
                         res.send(username);
                     }).catch((e) => {
-                        console.log(e);
                         res.sendStatus(500);
                     });
                 }
@@ -46,33 +44,14 @@ class UserModule {
                 Method:"get",
                 endpoint:"/auth/linkedin",
                 fn:(req,res,next) => {
-                    //aders)
-                    console.log(req.query)
-                    console.log(req.body)
-                    
                     let code = req.query.code;
-                    let redirect_uri = encodeURIComponent('http://localhost:3001/users/auth/linkedin')
-                    console.log("########")
-                    let options = {
-                        method:"POST",
-                        uri:"https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code="+code+"&redirect_uri="+redirect_uri+"&client_id=77yj9s749chsnc&client_secret=EwR65xRV01x4pVo0",
-
-                        headers:{
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
+                    this._loginWithLinkedin(code)
+                    .then((profile) => {
                         
-                    }
-                   
-                    
-                    rp(options)
-                    .then((resp) => {
-                        console.log("####")
-                        console.log(resp);
-                        res.send(200)
-                    }).catch((e) => {
-                        console.log("ERRROr",e)
-                        console.log(options.uri)
-                    })
+                        req.session.user = profile;
+                        console.log(req.session)
+                        res.redirect("http://localhost:3000/home")})
+                    .catch((e) => console.log(e))
                 }
             }
         ];
@@ -129,6 +108,46 @@ class UserModule {
         })
         
     }
+
+
+    _loginWithLinkedin(code){
+        let redirect_uri = encodeURIComponent(config.app.linkedin.redirect_uri);
+        let options = {
+            method:"POST",
+            uri:`https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=${code}&redirect_uri=${config.app.linkedin.redirect_uri}&client_id=${config.app.linkedin.client_id}&client_secret=${config.app.linkedin.client_secret}`,
+
+            headers:{
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }
+        return rp(options)
+        .then((resp) => {
+            resp = JSON.parse(resp);
+            let token = resp.access_token;                      
+            let options = {
+                method:"get",
+                uri:"https://api.linkedin.com/v2/me",
+                auth: {
+                    'bearer': token
+                }
+            };
+            return rp(options)
+            .then((data) => {
+                data = JSON.parse(data);
+                let profile = {
+                    firstName: data.localizedLastName,
+                    lastName: data.localizedFirstName
+                }
+                
+                return profile;
+                })
+            }).catch((e) => console.log(e))
+    }
+
+
+
+
+
     _middleware(req, res, next) {
         if(req.session.user === undefined){
             req.user = {

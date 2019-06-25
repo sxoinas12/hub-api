@@ -47,13 +47,21 @@ class UserModule {
                     let code = req.query.code;
                     this._loginWithLinkedin(code)
                     .then((profile) => {
-                        
                         req.session.user = profile;
-                        console.log(req.session)
-                        res.redirect("http://localhost:3000/home")})
+                        res.redirect("http://localhost:3000/home/?profile="+JSON.stringify(profile))})
                     .catch((e) => console.log(e))
                 }
+            },
+            {
+                Method:"get",
+                endpoint:"/me",
+                fn:(req,res,next) => {
+                    console.log(req.session);
+                    res.send(200)
+                }
             }
+
+
         ];
         RoutingSystem.RegisterRoutes(this.MainRoute, this.Routes, this._middleware);
     }
@@ -112,6 +120,7 @@ class UserModule {
 
     _loginWithLinkedin(code){
         let redirect_uri = encodeURIComponent(config.app.linkedin.redirect_uri);
+        let token;
         let options = {
             method:"POST",
             uri:`https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=${code}&redirect_uri=${config.app.linkedin.redirect_uri}&client_id=${config.app.linkedin.client_id}&client_secret=${config.app.linkedin.client_secret}`,
@@ -123,7 +132,7 @@ class UserModule {
         return rp(options)
         .then((resp) => {
             resp = JSON.parse(resp);
-            let token = resp.access_token;                      
+            token = resp.access_token;                      
             let options = {
                 method:"get",
                 uri:"https://api.linkedin.com/v2/me",
@@ -135,11 +144,21 @@ class UserModule {
             .then((data) => {
                 data = JSON.parse(data);
                 let profile = {
-                    firstName: data.localizedLastName,
-                    lastName: data.localizedFirstName
+                    username: data.username || data.localizedLastName,
+                    firstName: data.localizedLastName ,
+                    lastName: data.localizedFirstName,
+                    token:token
                 }
-                
-                return profile;
+                return this.repository.get('username',profile.username)
+                .then((data) => {
+                    if(data.length > 0) {
+                        return this.repository.update('username',profile.username,{token:token})
+                        .then(() => profile)
+                    }else{
+                        return this.repository.insert(profile)
+                        .then(() => profile)
+                    }
+                    })
                 })
             }).catch((e) => console.log(e))
     }
@@ -149,16 +168,7 @@ class UserModule {
 
 
     _middleware(req, res, next) {
-        if(req.session.user === undefined){
-            req.user = {
-                role:0
-            }
-            return next();
-        }
-        else{
-            req.user = req.sesion.user;
-            return next();
-        }
+        return next();
     }
 
 }

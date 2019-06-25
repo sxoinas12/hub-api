@@ -16,9 +16,9 @@ class Repository {
 		return knex.table(this.table).insert(data);
 	}
 
-	update(id,data){
+	update(field,value,data){
 		//maybe replace id with field --> depending on the table in the db
-		return knex.table(this.table).where('id',id).update(data);
+		return knex.table(this.table).where(field,value).update(data);
 	}
 	delete(id){
 		return knex.table(this.table).where('id',id);

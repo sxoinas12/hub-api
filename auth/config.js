@@ -3,9 +3,9 @@ module.exports = {
 		roles:[1,2],
 		session:{
 			secret:"konsta",
-			resave:false,
+			resave:true,
 			saveUninitialized: true,
-  			cookie: { secure: true }
+  			cookie: { secure: false }
 		},
 		linkedin:{
 			redirect_uri:"http://localhost:3001/users/auth/linkedin",
